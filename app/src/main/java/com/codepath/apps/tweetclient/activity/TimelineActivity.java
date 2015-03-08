@@ -1,8 +1,5 @@
 package com.codepath.apps.tweetclient.activity;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -15,8 +12,10 @@ import com.codepath.apps.tweetclient.R;
 import com.codepath.apps.tweetclient.TwitterApplication;
 import com.codepath.apps.tweetclient.TwitterClient;
 import com.codepath.apps.tweetclient.adapter.TweetsArrayAdapter;
+import com.codepath.apps.tweetclient.dialogs.ComposeTweetDialog;
 import com.codepath.apps.tweetclient.listener.EndlessScrollListener;
 import com.codepath.apps.tweetclient.models.Tweet;
+import com.codepath.apps.tweetclient.models.TweetStatus;
 import com.codepath.apps.tweetclient.utils.TwitterParams;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -27,7 +26,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class TimelineActivity extends ActionBarActivity {
-    private static final String APP_TAG = "TWEETCLIENT_APP";
+    public static final String APP_TAG = "TWEETCLIENT_APP";
 
     private TwitterClient client;
     private TwitterParams twitterParams;
@@ -41,7 +40,13 @@ public class TimelineActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
 
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setLogo(R.mipmap.twitter_client);
+
         client = TwitterApplication.getRestClient();
+        client.setParentActivity(this);
+
         twitterParams = new TwitterParams();
 
         setupView();
@@ -59,9 +64,11 @@ public class TimelineActivity extends ActionBarActivity {
         lvTweet.setOnScrollListener(new EndlessScrollListener(twitterParams.pageSize) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
+                Log.d(APP_TAG, "loading more tweets");
                 loadMoreTweet(page, totalItemsCount);
             }
         });
+
     }
 
     private void loadMoreTweet(int page, int totalItems) {
@@ -72,10 +79,6 @@ public class TimelineActivity extends ActionBarActivity {
     }
 
     private void populateTimeline(TwitterParams twitterParams) {
-        if (!isNetworkAvailable()){
-            Toast.makeText(this, "No internet connections available, pulling up cache!", Toast.LENGTH_SHORT).show();
-        }
-
         client.getHomeTimeline(twitterParams, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
@@ -106,18 +109,41 @@ public class TimelineActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_compose_tweet :
+                ComposeTweetDialog composeDialog = ComposeTweetDialog.newInstance();
+                composeDialog.show(getFragmentManager(), "compose_dialog");
+                break;
+            case R.id.action_logout :
+                client.clearAccessToken();
+                onBackPressed();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private Boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    public void onCompose(String message){
+        Toast.makeText(getApplicationContext(), "Tweet : " + message, Toast.LENGTH_SHORT).show();
+        final TweetStatus tweetStatus = new TweetStatus();
+        tweetStatus.status = message;
+
+        client.postTweet(tweetStatus, new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // check if the response has the same message
+                Tweet newTweet = Tweet.fromJSON(response);
+                aTweets.insert(newTweet, 0); // always insert them into the most top
+                if (newTweet != null && newTweet.getBody().equals(tweetStatus.status)){
+                    Toast.makeText(getApplicationContext(), "Tweet success!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(getApplicationContext(), "Unable to post tweets, please try again later", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }

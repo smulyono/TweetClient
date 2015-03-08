@@ -1,9 +1,12 @@
 package com.codepath.apps.tweetclient;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.widget.Toast;
 
+import com.codepath.apps.tweetclient.models.TweetStatus;
 import com.codepath.apps.tweetclient.utils.TwitterParams;
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -31,21 +34,25 @@ public class TwitterClient extends OAuthBaseClient {
 	public static final String REST_CONSUMER_SECRET = "83s28gHJeIdK2wIvszCwqLr50ARizuCB8MuAirIBkl0Nv4cZQZ"; // Change this
 	public static final String REST_CALLBACK_URL = "oauth://cptweetclient"; // Change this (here and in manifest)
 
+    private final String NO_NETWORK_HOMETIMELINE = "No internet connections available, use internal cache";
+    private final String NO_NETWORK_COMPOSE = "No internet connections available, will post tweets after internet established";
+
+    private Activity parentActivity;
+
 	public TwitterClient(Context context) {
 		super(context, REST_API_CLASS, REST_URL, REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
 	}
 
-	// CHANGE THIS
-	// DEFINE METHODS for different API endpoints here
-	public void getInterestingnessList(AsyncHttpResponseHandler handler) {
-		String apiUrl = getApiUrl("?nojsoncallback=1&method=flickr.interestingness.getList");
-		// Can specify query string params directly or through RequestParams.
-		RequestParams params = new RequestParams();
-		params.put("format", "json");
-		client.get(apiUrl, params, handler);
-	}
+    public void setParentActivity(Activity parentActivity){
+        this.parentActivity = parentActivity;
+    }
 
     public void getHomeTimeline(TwitterParams twitterParams, AsyncHttpResponseHandler handler){
+        if (!isNetworkAvailable()){
+            Toast.makeText(parentActivity.getApplicationContext(), NO_NETWORK_HOMETIMELINE, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String apiUrl = getApiUrl("statuses/home_timeline.json");
         RequestParams params = new RequestParams();
         params.put("count", twitterParams.pageSize);
@@ -58,6 +65,19 @@ public class TwitterClient extends OAuthBaseClient {
         getClient().get(apiUrl,params, handler);
     }
 
+    public void postTweet(TweetStatus tweetStatus, AsyncHttpResponseHandler handler){
+        if (!isNetworkAvailable()){
+            Toast.makeText(parentActivity.getApplicationContext(), NO_NETWORK_HOMETIMELINE, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String apiUrl = getApiUrl("statuses/update.json");
+        // construct requestParams
+        RequestParams params = new RequestParams();
+        params.put("status", tweetStatus.status);
+        getClient().post(apiUrl, params, handler);
+    }
+
 	/* 1. Define the endpoint URL with getApiUrl and pass a relative path to the endpoint
 	 * 	  i.e getApiUrl("statuses/home_timeline.json");
 	 * 2. Define the parameters to pass to the request (query or body)
@@ -66,6 +86,10 @@ public class TwitterClient extends OAuthBaseClient {
 	 *    i.e client.get(apiUrl, params, handler);
 	 *    i.e client.post(apiUrl, params, handler);
 	 */
-
-
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) parentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
 }

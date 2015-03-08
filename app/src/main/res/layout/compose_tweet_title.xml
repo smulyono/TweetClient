@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:layout_margin="15dp"
+    android:background="@color/navbar_color"
+    >
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/ivProfileImageInCompose"
+        android:src="@mipmap/twitter_client"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/compose_tweet_title"
+        android:id="@+id/tvTitle"
+        android:textColor="@color/title_color"
+        android:textSize="@dimen/comment_text"
+        android:layout_alignTop="@id/ivProfileImageInCompose"
+        android:layout_toRightOf="@+id/ivProfileImageInCompose"
+        android:layout_alignBottom="@+id/ivProfileImageInCompose"
+        android:gravity="center_vertical"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="140 characters left"
+        android:id="@+id/tvCharcount"
+        android:textSize="@dimen/comment_text"
+        android:textColor="@color/black_color"
+        android:textStyle="bold|italic"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignBottom="@+id/ivProfileImageInCompose"
+        android:gravity="center_vertical"
+        android:paddingRight="10dp"
+        />
+</RelativeLayout>

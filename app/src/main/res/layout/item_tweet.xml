@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:padding="10dp"
+    android:background="@color/white"
     android:layout_width="fill_parent" android:layout_height="wrap_content">
 
     <ImageView
@@ -14,15 +15,17 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sanny"
+        android:layout_height="20dp"
+        android:text="TD Account"
         android:id="@+id/tvUsername"
         android:textColor="@color/black_color"
         android:textSize="@dimen/title_text"
         android:textStyle="bold"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/ivProfileImage"
-        android:layout_toEndOf="@+id/ivProfileImage" />
+        android:layout_toEndOf="@+id/ivProfileImage"
+        android:layout_marginRight="5dp"
+        />
 
     <TextView
         android:layout_width="wrap_content"
@@ -43,10 +46,24 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="2 hour ago - March 7, 2015"
-        android:textSize="@dimen/comment_text"
+        android:textSize="@dimen/small_text"
         android:id="@+id/tvTimestamp"
         android:textColor="@color/light_black_color"
         android:layout_below="@+id/tvBody"
         android:layout_toRightOf="@+id/ivProfileImage"
         android:layout_toEndOf="@+id/ivProfileImage" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="\@smulyono"
+        android:id="@+id/tvScreenname"
+        android:textSize="@dimen/small_text"
+        android:textColor="@color/light_black_color"
+        android:layout_toRightOf="@+id/tvUsername"
+        android:layout_alignParentTop="true"
+        android:textStyle="italic"
+        android:gravity="center"
+        />
 </RelativeLayout>

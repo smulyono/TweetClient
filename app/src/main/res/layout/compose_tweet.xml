@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dialog_height"
+        android:inputType="textMultiLine"
+        android:id="@+id/etCompose"
+        android:hint="@string/compose_hint"
+        android:lines="5"
+        android:gravity="top"
+        android:textColor="@color/black_color"
+        android:maxLength="140"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:padding="10dp"
+        />
+
+</RelativeLayout>

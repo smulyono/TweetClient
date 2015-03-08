@@ -23,6 +23,7 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
     private class ViewHolder {
         private ImageView ivProfileImage;
         private TextView tvUsername;
+        private TextView tvScreenname;
         private TextView tvBody;
         private TextView tvTimestamp;
     }
@@ -47,6 +48,7 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
             viewHolder.tvUsername = (TextView) convertView.findViewById(R.id.tvUsername);
             viewHolder.tvBody = (TextView) convertView.findViewById(R.id.tvBody);
             viewHolder.tvTimestamp = (TextView) convertView.findViewById(R.id.tvTimestamp);
+            viewHolder.tvScreenname = (TextView) convertView.findViewById(R.id.tvScreenname);
 
             convertView.setTag(viewHolder);
 
@@ -54,7 +56,8 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.tvUsername.setText(tweet.getUser().getScreenName());
+        viewHolder.tvUsername.setText(tweet.getUser().getName());
+        viewHolder.tvScreenname.setText("@" + tweet.getUser().getScreenName());
         viewHolder.tvBody.setText(tweet.getBody());
         viewHolder.ivProfileImage.setImageResource(android.R.color.transparent);
         viewHolder.tvTimestamp.setText(AppUtil.getRelativeTimeAgo(tweet.getCreatedAt()));
