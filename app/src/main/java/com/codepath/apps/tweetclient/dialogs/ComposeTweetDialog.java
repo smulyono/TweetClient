@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import com.codepath.apps.tweetclient.R;
 import com.codepath.apps.tweetclient.activity.TimelineActivity;
+import com.squareup.picasso.Picasso;
 
 /**
  * Created by smulyono on 3/7/15.
@@ -22,8 +24,10 @@ import com.codepath.apps.tweetclient.activity.TimelineActivity;
 public class ComposeTweetDialog extends DialogFragment {
 
     private ImageView ivProfileInCompose;
-    private EditText etCompose;
     private TextView tvCharacterLeft;
+    private TextView tvTitle;
+
+    private EditText etCompose;
     private TimelineActivity parentActivity;
 
     public static ComposeTweetDialog newInstance(){
@@ -47,6 +51,9 @@ public class ComposeTweetDialog extends DialogFragment {
 
 
         tvCharacterLeft = (TextView) titleView.findViewById(R.id.tvCharcount);
+        ivProfileInCompose = (ImageView) titleView.findViewById(R.id.ivProfileImageInCompose);
+        tvTitle = (TextView) titleView.findViewById(R.id.tvTitle);
+
         etCompose = (EditText) bodyView.findViewById(R.id.etCompose);
 
         etCompose.setOnKeyListener(new View.OnKeyListener() {
@@ -66,6 +73,15 @@ public class ComposeTweetDialog extends DialogFragment {
                 return false;
             }
         });
+
+        if (parentActivity.userInfo != null){
+            // load user info image
+            Picasso.with(getActivity().getApplicationContext())
+                    .load(parentActivity.userInfo.getProfileImageUrl())
+                    .into(ivProfileInCompose);
+
+            tvTitle.setText(Html.fromHtml(parentActivity.userInfo.getName() + "<br /> @" + parentActivity.userInfo.getScreenName()));
+        }
 
         builder.setCustomTitle(titleView)
                .setView(bodyView)

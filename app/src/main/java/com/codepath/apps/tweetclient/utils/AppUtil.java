@@ -20,7 +20,8 @@ public class AppUtil {
         try {
             long dateMillis = sf.parse(rawJson).getTime();
             relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,
-                    System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
+                    System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE).toString();
+            // shorten the
         } catch (ParseException e) {
             e.printStackTrace();
         }

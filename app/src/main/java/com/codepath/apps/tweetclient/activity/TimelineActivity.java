@@ -17,6 +17,7 @@ import com.codepath.apps.tweetclient.dialogs.ComposeTweetDialog;
 import com.codepath.apps.tweetclient.listener.EndlessScrollListener;
 import com.codepath.apps.tweetclient.models.Tweet;
 import com.codepath.apps.tweetclient.models.TweetStatus;
+import com.codepath.apps.tweetclient.models.User;
 import com.codepath.apps.tweetclient.utils.TwitterParams;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -37,6 +38,8 @@ public class TimelineActivity extends ActionBarActivity {
     private ArrayList<Tweet> tweets;
     private TweetsArrayAdapter aTweets;
 
+    public User userInfo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +51,17 @@ public class TimelineActivity extends ActionBarActivity {
 
         client = TwitterApplication.getRestClient();
         client.setParentActivity(this);
+        // retrieve user info
+        client.retrieveUserInfo(new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                userInfo = User.fromJSON(response);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            }
+        });
 
         twitterParams = new TwitterParams();
         setupView();
@@ -152,7 +166,6 @@ public class TimelineActivity extends ActionBarActivity {
     }
 
     public void onCompose(String message){
-        Toast.makeText(getApplicationContext(), "Tweet : " + message, Toast.LENGTH_SHORT).show();
         final TweetStatus tweetStatus = new TweetStatus();
         tweetStatus.status = message;
 
@@ -162,9 +175,6 @@ public class TimelineActivity extends ActionBarActivity {
                 // check if the response has the same message
                 Tweet newTweet = Tweet.fromJSON(response);
                 aTweets.insert(newTweet, 0); // always insert them into the most top
-                if (newTweet != null && newTweet.getBody().equals(tweetStatus.status)){
-                    Toast.makeText(getApplicationContext(), "Tweet success!", Toast.LENGTH_SHORT).show();
-                }
             }
 
             @Override

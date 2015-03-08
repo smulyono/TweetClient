@@ -43,27 +43,33 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="20dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="2 hour ago - March 7, 2015"
+        android:text="2 hour ago"
         android:textSize="@dimen/small_text"
+        android:textStyle="italic"
         android:id="@+id/tvTimestamp"
         android:textColor="@color/light_black_color"
-        android:layout_below="@+id/tvBody"
-        android:layout_toRightOf="@+id/ivProfileImage"
-        android:layout_toEndOf="@+id/ivProfileImage" />
+        android:gravity="center"
+        android:layout_alignTop="@+id/tvScreenname"
+        android:layout_toRightOf="@+id/tvScreenname"
+        android:layout_toEndOf="@+id/tvScreenname"
+        android:layout_alignBottom="@id/tvScreenname"
+        />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="20dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="\@smulyono"
+        android:text="\@smulyono - "
         android:id="@+id/tvScreenname"
         android:textSize="@dimen/small_text"
         android:textColor="@color/light_black_color"
         android:layout_toRightOf="@+id/tvUsername"
+        android:layout_alignTop="@id/tvUsername"
         android:layout_alignParentTop="true"
         android:textStyle="italic"
         android:gravity="center"
+        android:layout_marginRight="5dp"
         />
 </RelativeLayout>
