@@ -16,8 +16,8 @@ import com.codepath.apps.tweetclient.adapter.TweetsArrayAdapter;
 import com.codepath.apps.tweetclient.dialogs.ComposeTweetDialog;
 import com.codepath.apps.tweetclient.listener.EndlessScrollListener;
 import com.codepath.apps.tweetclient.models.Tweet;
+import com.codepath.apps.tweetclient.models.TweetClient_User;
 import com.codepath.apps.tweetclient.models.TweetStatus;
-import com.codepath.apps.tweetclient.models.User;
 import com.codepath.apps.tweetclient.utils.TwitterParams;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -26,6 +26,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TimelineActivity extends ActionBarActivity {
     public static final String APP_TAG = "TWEETCLIENT_APP";
@@ -38,7 +39,7 @@ public class TimelineActivity extends ActionBarActivity {
     private ArrayList<Tweet> tweets;
     private TweetsArrayAdapter aTweets;
 
-    public User userInfo;
+    public TweetClient_User userInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +56,8 @@ public class TimelineActivity extends ActionBarActivity {
         client.retrieveUserInfo(new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                userInfo = User.fromJSON(response);
+                userInfo = TweetClient_User.fromJSON(response);
+                // save this information
             }
 
             @Override
@@ -120,7 +122,10 @@ public class TimelineActivity extends ActionBarActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 Log.d(APP_TAG, response.toString());
-                aTweets.addAll(Tweet.fromJSONArray(response));
+                List<Tweet> newTweets =Tweet.fromJSONArray(response);
+                aTweets.addAll(newTweets);
+                // add all records also into SQLite
+                Tweet.insertAll(newTweets);
             }
 
             @Override
@@ -175,6 +180,7 @@ public class TimelineActivity extends ActionBarActivity {
                 // check if the response has the same message
                 Tweet newTweet = Tweet.fromJSON(response);
                 aTweets.insert(newTweet, 0); // always insert them into the most top
+                Tweet.insertAll(newTweet);
             }
 
             @Override

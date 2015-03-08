@@ -1,8 +1,5 @@
 package com.codepath.apps.tweetclient.models;
 
-
-//https://dev.twitter.com/overview/api/users
-
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
@@ -12,10 +9,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by smulyono on 3/7/15.
+ * The model is the same as 'User' but it will be saved in different table to identify
+ * the logged in user
  */
-@Table(name="tweet_user")
-public class User extends Model{
+
+/**
+ * Created by smulyono on 3/8/15.
+ */
+@Table(name="tweetclient_user")
+public class TweetClient_User extends Model {
     @Column(name="name")
     private String name;
     @Column(name = "uid", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
@@ -25,16 +27,15 @@ public class User extends Model{
     @Column(name = "profile_image_url")
     private String profileImageUrl;
 
-    public static User findOrCreatefromJSON(JSONObject json){
-        User user = new User();
+    public static TweetClient_User fromJSON(JSONObject json){
+        TweetClient_User user = new TweetClient_User();
         try {
             user.uid = json.getLong("id");
 
-            User existingUser = new Select().from(User.class)
+            TweetClient_User existingUser = new Select().from(TweetClient_User.class)
                     .where("uid = ?", user.uid)
                     .executeSingle();
             if (existingUser != null){
-                //  update the current record with updated info
                 existingUser.name = json.getString("name");
                 existingUser.screenName = json.getString("screen_name");
                 existingUser.profileImageUrl = json.getString("profile_image_url");
@@ -44,6 +45,7 @@ public class User extends Model{
                 user.name = json.getString("name");
                 user.screenName = json.getString("screen_name");
                 user.profileImageUrl = json.getString("profile_image_url");
+                // always save this information to DB
                 user.save();
             }
         } catch (JSONException e){
