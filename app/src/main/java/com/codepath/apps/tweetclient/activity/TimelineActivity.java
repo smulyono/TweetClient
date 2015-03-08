@@ -1,6 +1,7 @@
 package com.codepath.apps.tweetclient.activity;
 
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -31,6 +32,7 @@ public class TimelineActivity extends ActionBarActivity {
     private TwitterClient client;
     private TwitterParams twitterParams;
 
+    private SwipeRefreshLayout swipeContainer;
     private ListView lvTweet;
     private ArrayList<Tweet> tweets;
     private TweetsArrayAdapter aTweets;
@@ -48,13 +50,19 @@ public class TimelineActivity extends ActionBarActivity {
         client.setParentActivity(this);
 
         twitterParams = new TwitterParams();
-
         setupView();
 
+        initialTimelineLoad();
+    }
+
+    private void initialTimelineLoad(){
+        aTweets.clear();
+        twitterParams = new TwitterParams();
         populateTimeline(twitterParams);
     }
 
     private void setupView() {
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         lvTweet = (ListView) findViewById(R.id.lvTweets);
 
         tweets = new ArrayList<Tweet>();
@@ -68,6 +76,21 @@ public class TimelineActivity extends ActionBarActivity {
                 loadMoreTweet(page, totalItemsCount);
             }
         });
+
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                initialTimelineLoad();
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(
+                R.color.navbar_color,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light
+        );
+
 
     }
 
@@ -89,6 +112,11 @@ public class TimelineActivity extends ActionBarActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Log.d(APP_TAG, errorResponse.toString());
+            }
+
+            @Override
+            public void onFinish() {
+                swipeContainer.setRefreshing(false);
             }
         });
     }
