@@ -75,6 +75,7 @@ public class ComposeTweetDialog extends DialogFragment {
         });
 
         if (parentActivity.userInfo != null){
+            ivProfileInCompose.setImageResource(R.mipmap.ic_nopic);
             // load user info image
             Picasso.with(getActivity().getApplicationContext())
                     .load(parentActivity.userInfo.getProfileImageUrl())
@@ -91,7 +92,14 @@ public class ComposeTweetDialog extends DialogFragment {
                         parentActivity.onCompose(etCompose.getText().toString());
                         dismiss();
                     }
-                });
+                })
+                .setNegativeButton(R.string.cancel_label, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        getDialog().cancel();
+                    }
+                })
+        ;
 
         return builder.create();
     }

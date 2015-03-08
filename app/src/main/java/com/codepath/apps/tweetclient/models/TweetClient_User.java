@@ -32,9 +32,7 @@ public class TweetClient_User extends Model {
         try {
             user.uid = json.getLong("id");
 
-            TweetClient_User existingUser = new Select().from(TweetClient_User.class)
-                    .where("uid = ?", user.uid)
-                    .executeSingle();
+            TweetClient_User existingUser = TweetClient_User.getUserInfo(user.uid);
             if (existingUser != null){
                 existingUser.name = json.getString("name");
                 existingUser.screenName = json.getString("screen_name");
@@ -52,6 +50,13 @@ public class TweetClient_User extends Model {
             e.printStackTrace();
         }
         return user;
+    }
+
+    public static TweetClient_User getUserInfo(long uid){
+        TweetClient_User existingUser = new Select().from(TweetClient_User.class)
+                .where("uid = ?", uid)
+                .executeSingle();
+        return existingUser;
     }
 
     public String getName() {

@@ -34,8 +34,8 @@ public class TwitterClient extends OAuthBaseClient {
 	public static final String REST_CONSUMER_SECRET = "83s28gHJeIdK2wIvszCwqLr50ARizuCB8MuAirIBkl0Nv4cZQZ"; // Change this
 	public static final String REST_CALLBACK_URL = "oauth://cptweetclient"; // Change this (here and in manifest)
 
-    private final String NO_NETWORK_HOMETIMELINE = "No internet connections available, use internal cache";
-    private final String NO_NETWORK_COMPOSE = "No internet connections available, will post tweets after internet established";
+    public final String NO_NETWORK_HOMETIMELINE = "No internet connections available, use internal cache";
+    public final String NO_NETWORK_COMPOSE = "No internet connections available, unable to post tweets";
 
     private Activity parentActivity;
 
@@ -98,7 +98,7 @@ public class TwitterClient extends OAuthBaseClient {
 	 *    i.e client.get(apiUrl, params, handler);
 	 *    i.e client.post(apiUrl, params, handler);
 	 */
-    private Boolean isNetworkAvailable() {
+    public Boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) parentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();

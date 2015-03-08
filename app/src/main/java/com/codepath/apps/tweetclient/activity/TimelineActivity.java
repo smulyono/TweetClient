@@ -1,6 +1,8 @@
 package com.codepath.apps.tweetclient.activity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -52,18 +54,7 @@ public class TimelineActivity extends ActionBarActivity {
 
         client = TwitterApplication.getRestClient();
         client.setParentActivity(this);
-        // retrieve user info
-        client.retrieveUserInfo(new JsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                userInfo = TweetClient_User.fromJSON(response);
-                // save this information
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-            }
-        });
+        retrieveLoggedInUserInfo();
 
         twitterParams = new TwitterParams();
         setupView();
@@ -74,7 +65,45 @@ public class TimelineActivity extends ActionBarActivity {
     private void initialTimelineLoad(){
         aTweets.clear();
         twitterParams = new TwitterParams();
+
         populateTimeline(twitterParams);
+        // try to revive it back
+        if (userInfo == null && client.isNetworkAvailable()){
+            retrieveLoggedInUserInfo();
+        }
+    }
+
+    private void retrieveLoggedInUserInfo(){
+        // if there is no network, then look into shared preferences
+        if (!client.isNetworkAvailable()){
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            long uid = sharedPreferences.getLong("uid", -1);
+            if (uid == -1){
+                // there is no cache or anything yet; so we cannot give information
+                userInfo = new TweetClient_User();
+            } else {
+                userInfo = TweetClient_User.getUserInfo(uid);
+            }
+
+            return;
+        }
+
+        // retrieve user info
+        client.retrieveUserInfo(new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                userInfo = TweetClient_User.fromJSON(response);
+                // save this information
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                SharedPreferences.Editor edit = sharedPreferences.edit();
+                edit.putLong("uid", userInfo.getUid());
+                edit.commit();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            }
+        });
     }
 
     private void setupView() {
@@ -118,6 +147,17 @@ public class TimelineActivity extends ActionBarActivity {
     }
 
     private void populateTimeline(TwitterParams twitterParams) {
+        if (!client.isNetworkAvailable()){
+            // use cache from DB to retrieve the results
+            Toast.makeText(getApplicationContext(), client.NO_NETWORK_HOMETIMELINE, Toast.LENGTH_SHORT).show();
+
+            List<Tweet> newTweets = Tweet.getAll(twitterParams.sinceId, twitterParams.maxId);
+            aTweets.addAll(newTweets);
+
+            swipeContainer.setRefreshing(false);
+            return;
+        }
+
         client.getHomeTimeline(twitterParams, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
@@ -130,7 +170,8 @@ public class TimelineActivity extends ActionBarActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.d(APP_TAG, errorResponse.toString());
+                // something wrong
+                Toast.makeText(getApplicationContext(), "Unable to retrieve information from internet, please try again later", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -158,8 +199,12 @@ public class TimelineActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         switch (id) {
             case R.id.action_compose_tweet :
-                ComposeTweetDialog composeDialog = ComposeTweetDialog.newInstance();
-                composeDialog.show(getFragmentManager(), "compose_dialog");
+                if (!client.isNetworkAvailable()){
+                    Toast.makeText(this, client.NO_NETWORK_COMPOSE, Toast.LENGTH_SHORT).show();
+                } else {
+                    ComposeTweetDialog composeDialog = ComposeTweetDialog.newInstance();
+                    composeDialog.show(getFragmentManager(), "compose_dialog");
+                }
                 break;
             case R.id.action_logout :
                 client.clearAccessToken();

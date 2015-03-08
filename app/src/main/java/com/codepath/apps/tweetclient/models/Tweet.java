@@ -89,10 +89,17 @@ public class Tweet extends Model{
         }
     }
     public static List<Tweet> getAll(long sinceId, long maxId){
-        return new Select().from(Tweet.class)
-                .where("uid > ?", sinceId).and("uid <= ? ", maxId)
-                .orderBy("uid desc")
-                .execute();
+        if (maxId > 0){
+            return new Select().from(Tweet.class)
+                    .where("uid > ?", sinceId).and("uid <= ? ", maxId)
+                    .orderBy("uid desc")
+                    .execute();
+        } else {
+            return new Select().from(Tweet.class)
+                    .where("uid > ?", sinceId)
+                    .orderBy("uid desc")
+                    .execute();
+        }
     }
 
 

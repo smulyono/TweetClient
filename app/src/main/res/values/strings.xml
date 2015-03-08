@@ -7,6 +7,7 @@
 
     <string name="compose_label">Tweet</string>
     <string name="compose_hint">What\'s happening?</string>
+    <string name="cancel_label">Cancel</string>
 
     <string name="action_compose">Compose tweet</string>
     <string name="title_activity_compose_tweet">ComposeTweetActivity</string>
