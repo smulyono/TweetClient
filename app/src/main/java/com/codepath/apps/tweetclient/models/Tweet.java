@@ -17,6 +17,8 @@ public class Tweet {
     private long uid; // unique id for tweet
     private String createdAt;
     private User user;
+    private int tweetCount;
+    private int favouriteCount;
 
     public static ArrayList<Tweet> fromJSONArray(JSONArray jsonArray) {
         ArrayList<Tweet> tweets = new ArrayList<Tweet>();
@@ -36,12 +38,15 @@ public class Tweet {
 
         return tweets;
     }
+
     public static Tweet fromJSON(JSONObject jsonObject){
         Tweet tweet = new Tweet();
         try {
             tweet.body = jsonObject.getString("text");
             tweet.uid = jsonObject.getLong("id");
             tweet.createdAt = jsonObject.getString("created_at");
+            tweet.tweetCount = jsonObject.getInt("retweet_count");
+            tweet.favouriteCount = jsonObject.getInt("favorite_count");
             tweet.user = User.fromJSON(jsonObject.getJSONObject("user"));
         } catch (JSONException e){
             e.printStackTrace();
@@ -67,4 +72,11 @@ public class Tweet {
         return user;
     }
 
+    public int getTweetCount() {
+        return tweetCount;
+    }
+
+    public int getFavouriteCount() {
+        return favouriteCount;
+    }
 }

@@ -39,6 +39,7 @@
         android:layout_toEndOf="@+id/ivProfileImage"
         android:autoLink="all"
         android:linksClickable="true"
+        android:layout_marginBottom="10dp"
         />
 
     <TextView
@@ -72,4 +73,57 @@
         android:gravity="center"
         android:layout_marginRight="5dp"
         />
+
+    <ImageView
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:id="@+id/ivstar"
+        android:src="@mipmap/ic_star"
+        android:adjustViewBounds="true"
+        android:layout_below="@id/tvBody"
+        android:layout_alignLeft="@id/tvBody"
+        />
+
+    <TextView
+        android:layout_width="50dp"
+        android:layout_height="16dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="30"
+        android:id="@+id/tvFavcount"
+        android:textSize="@dimen/comment_text"
+        android:textColor="@color/light_black_color"
+        android:textStyle="italic"
+        android:gravity="center_vertical"
+        android:layout_alignTop="@id/ivstar"
+        android:layout_below="@id/tvBody"
+        android:layout_toRightOf="@id/ivstar"
+        android:layout_marginRight="15dp"
+        />
+
+    <ImageView
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:id="@+id/ivretweet"
+        android:src="@mipmap/ic_retweet"
+        android:adjustViewBounds="true"
+        android:layout_below="@id/tvBody"
+        android:layout_toRightOf="@id/tvFavcount"
+        android:layout_centerHorizontal="true"
+        />
+    <TextView
+        android:layout_width="50dp"
+        android:layout_height="16dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="10"
+        android:id="@+id/tvRetweet"
+        android:textSize="@dimen/comment_text"
+        android:textColor="@color/light_black_color"
+        android:textStyle="italic"
+        android:gravity="center_vertical"
+        android:layout_alignTop="@id/ivstar"
+        android:layout_below="@id/tvBody"
+        android:layout_toRightOf="@id/ivretweet"
+        android:layout_marginRight="15dp"
+        />
+
 </RelativeLayout>
