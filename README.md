@@ -28,4 +28,4 @@ User story completed:
 - [x] User can see __detail__ view of the weet
 - [x] Compose activity is using modal overlay
 
-![Walkthrough.gif](walkthrough.gif)
+# ![Application walkthrough ](walkthrough1.gif)  ___  ![Application with no internet](walkthrough-nointernet.gif)#

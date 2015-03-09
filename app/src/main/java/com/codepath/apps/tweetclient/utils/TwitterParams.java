@@ -10,7 +10,7 @@ public class TwitterParams {
 
     public TwitterParams(){
         // default
-        this.pageSize = 25;
+        this.pageSize = 30;
         this.sinceId = 1;
         this.maxId = 0;
     }
