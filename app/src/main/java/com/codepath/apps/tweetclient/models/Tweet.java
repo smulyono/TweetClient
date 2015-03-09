@@ -2,6 +2,9 @@ package com.codepath.apps.tweetclient.models;
 
 //https://dev.twitter.com/overview/api/tweets
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
@@ -19,7 +22,7 @@ import java.util.List;
  * Created by smulyono on 3/7/15.
  */
 @Table(name = "tweets")
-public class Tweet extends Model{
+public class Tweet extends Model implements Parcelable {
     @Column(name="body")
     private String body;
     @Column(name = "uid", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
@@ -126,4 +129,42 @@ public class Tweet extends Model{
     public int getFavouriteCount() {
         return favouriteCount;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.body);
+        dest.writeLong(this.uid);
+        dest.writeString(this.createdAt);
+        dest.writeParcelable(this.user, 0);
+        dest.writeInt(this.tweetCount);
+        dest.writeInt(this.favouriteCount);
+    }
+
+    public Tweet() {
+    }
+
+    private Tweet(Parcel in) {
+        this.body = in.readString();
+        this.uid = in.readLong();
+        this.createdAt = in.readString();
+        this.user = in.readParcelable(User.class.getClassLoader());
+        this.tweetCount = in.readInt();
+        this.favouriteCount = in.readInt();
+    }
+
+    public static final Parcelable.Creator<Tweet> CREATOR = new Parcelable.Creator<Tweet>() {
+        public Tweet createFromParcel(Parcel source) {
+            return new Tweet(source);
+        }
+
+        public Tweet[] newArray(int size) {
+            return new Tweet[size];
+        }
+    };
 }

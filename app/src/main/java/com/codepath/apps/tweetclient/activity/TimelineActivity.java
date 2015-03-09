@@ -1,5 +1,6 @@
 package com.codepath.apps.tweetclient.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -8,6 +9,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -32,6 +35,8 @@ import java.util.List;
 
 public class TimelineActivity extends ActionBarActivity {
     public static final String APP_TAG = "TWEETCLIENT_APP";
+
+    public final int INTENT_DETAIL_ITEM_TWEET = 1001;
 
     private TwitterClient client;
     private TwitterParams twitterParams;
@@ -121,6 +126,16 @@ public class TimelineActivity extends ActionBarActivity {
                 loadMoreTweet(page, totalItemsCount);
             }
         });
+        lvTweet.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // get the item and pass it to the other activity
+                Tweet selectedTweet = aTweets.getItem(position);
+                Intent i = new Intent(TimelineActivity.this, ItemTweetActivity.class);
+                i.putExtra("tweet", selectedTweet);
+                startActivityForResult(i, INTENT_DETAIL_ITEM_TWEET);
+            }
+        });
 
         // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -135,8 +150,6 @@ public class TimelineActivity extends ActionBarActivity {
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light
         );
-
-
     }
 
     private void loadMoreTweet(int page, int totalItems) {
@@ -170,8 +183,12 @@ public class TimelineActivity extends ActionBarActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                // something wrong
-                Toast.makeText(getApplicationContext(), "Unable to retrieve information from internet, please try again later", Toast.LENGTH_SHORT).show();
+                if (statusCode == client.CODE_UNAUTHORIZED) {
+                    forceLogout();
+                } else {
+                    // something wrong
+                    Toast.makeText(getApplicationContext(), "Unable to retrieve information from internet, please try again later", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -207,12 +224,16 @@ public class TimelineActivity extends ActionBarActivity {
                 }
                 break;
             case R.id.action_logout :
-                client.clearAccessToken();
-                onBackPressed();
+                forceLogout();
                 break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void forceLogout(){
+        client.clearAccessToken();
+        onBackPressed();
     }
 
     public void onCompose(String message){
@@ -230,9 +251,21 @@ public class TimelineActivity extends ActionBarActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(getApplicationContext(), "Unable to post tweets, please try again later", Toast.LENGTH_SHORT).show();
+                if (statusCode == client.CODE_UNAUTHORIZED) {
+                    forceLogout();
+                } else {
+                    // something wrong
+                    Toast.makeText(getApplicationContext(), "Unable to post tweets, please try again later", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == INTENT_DETAIL_ITEM_TWEET && resultCode == 200 ) {
+            // whenever detail item tweet intent finished will go here
+
+        }
+    }
 }

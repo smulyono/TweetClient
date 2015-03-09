@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.view.Menu;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.codepath.apps.tweetclient.activity.TimelineActivity;
 import com.codepath.oauth.OAuthLoginActionBarActivity;
@@ -62,7 +63,8 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 	// i.e Display an error dialog or toast
 	@Override
 	public void onLoginFailure(Exception e) {
-		e.printStackTrace();
+        Toast.makeText(getApplicationContext(), "Unable to initiate OAuth, please check your device time and restar the applications", Toast.LENGTH_SHORT).show();
+        e.printStackTrace();
 	}
 
 	// Click handler method for the button used to start OAuth flow

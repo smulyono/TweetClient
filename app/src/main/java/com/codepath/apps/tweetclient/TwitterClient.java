@@ -36,6 +36,7 @@ public class TwitterClient extends OAuthBaseClient {
 
     public final String NO_NETWORK_HOMETIMELINE = "No internet connections available, use internal cache";
     public final String NO_NETWORK_COMPOSE = "No internet connections available, unable to post tweets";
+    public final int CODE_UNAUTHORIZED = 401;
 
     private Activity parentActivity;
 
