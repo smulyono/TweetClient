@@ -163,11 +163,7 @@ public class TimelineActivity extends ActionBarActivity {
         if (!client.isNetworkAvailable()){
             // use cache from DB to retrieve the results
             Toast.makeText(getApplicationContext(), client.NO_NETWORK_HOMETIMELINE, Toast.LENGTH_SHORT).show();
-
-            List<Tweet> newTweets = Tweet.getAll(twitterParams.sinceId, twitterParams.maxId);
-            aTweets.addAll(newTweets);
-
-            swipeContainer.setRefreshing(false);
+            getDataFromDB();
             return;
         }
 
@@ -187,7 +183,8 @@ public class TimelineActivity extends ActionBarActivity {
                     forceLogout();
                 } else {
                     // something wrong
-                    Toast.makeText(getApplicationContext(), "Unable to retrieve information from internet, please try again later", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Unable to retrieve latest information from internet, use cache instead", Toast.LENGTH_SHORT).show();
+                    getDataFromDB();
                 }
             }
 
@@ -267,5 +264,12 @@ public class TimelineActivity extends ActionBarActivity {
             // whenever detail item tweet intent finished will go here
 
         }
+    }
+
+    private void getDataFromDB(){
+        List<Tweet> newTweets = Tweet.getAll(twitterParams.sinceId, twitterParams.maxId);
+        aTweets.addAll(newTweets);
+
+        swipeContainer.setRefreshing(false);
     }
 }

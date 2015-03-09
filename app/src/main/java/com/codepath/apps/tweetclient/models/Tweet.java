@@ -96,11 +96,13 @@ public class Tweet extends Model implements Parcelable {
             return new Select().from(Tweet.class)
                     .where("uid > ?", sinceId).and("uid <= ? ", maxId)
                     .orderBy("uid desc")
+                    .limit(25)
                     .execute();
         } else {
             return new Select().from(Tweet.class)
                     .where("uid > ?", sinceId)
                     .orderBy("uid desc")
+                    .limit(25)
                     .execute();
         }
     }
