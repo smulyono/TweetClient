@@ -10,6 +10,7 @@ import com.codepath.apps.tweetclient.models.TweetStatus;
 import com.codepath.apps.tweetclient.utils.TwitterParams;
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import org.scribe.builder.api.Api;
@@ -104,5 +105,23 @@ public class TwitterClient extends OAuthBaseClient {
                 = (ConnectivityManager) parentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
+    public void getMentionsTimeline(TwitterParams twitterParams, JsonHttpResponseHandler handler) {
+        if (!isNetworkAvailable()){
+            Toast.makeText(parentActivity.getApplicationContext(), NO_NETWORK_HOMETIMELINE, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String apiUrl = getApiUrl("statuses/mentions_timeline.json");
+        RequestParams params = new RequestParams();
+        params.put("count", twitterParams.pageSize);
+        if (twitterParams.sinceId > 0){
+            params.put("since_id", twitterParams.sinceId);
+        }
+        if (twitterParams.maxId > 0){
+            params.put("max_id", twitterParams.maxId);
+        }
+        getClient().get(apiUrl,params, handler);
     }
 }

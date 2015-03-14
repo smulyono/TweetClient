@@ -4,49 +4,65 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Toast;
 
+import com.astuetz.PagerSlidingTabStrip;
 import com.codepath.apps.tweetclient.R;
 import com.codepath.apps.tweetclient.TwitterApplication;
 import com.codepath.apps.tweetclient.TwitterClient;
-import com.codepath.apps.tweetclient.adapter.TweetsArrayAdapter;
 import com.codepath.apps.tweetclient.dialogs.ComposeTweetDialog;
-import com.codepath.apps.tweetclient.listener.EndlessScrollListener;
-import com.codepath.apps.tweetclient.models.Tweet;
+import com.codepath.apps.tweetclient.fragments.HomeTimelineFragment;
+import com.codepath.apps.tweetclient.fragments.MentionsTimelineFragment;
 import com.codepath.apps.tweetclient.models.TweetClient_User;
 import com.codepath.apps.tweetclient.models.TweetStatus;
-import com.codepath.apps.tweetclient.utils.TwitterParams;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
-import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TimelineActivity extends ActionBarActivity {
     public static final String APP_TAG = "TWEETCLIENT_APP";
-
-    public final int INTENT_DETAIL_ITEM_TWEET = 1001;
+    public static final int INTENT_DETAIL_ITEM_TWEET = 1001;
 
     private TwitterClient client;
-    private TwitterParams twitterParams;
-
-    private SwipeRefreshLayout swipeContainer;
-    private ListView lvTweet;
-    private ArrayList<Tweet> tweets;
-    private TweetsArrayAdapter aTweets;
-
+    private HomeTimelineFragment homeTimelineFragment;
     public TweetClient_User userInfo;
+
+    public class TweetsPagerAdapter extends FragmentPagerAdapter {
+        final int PAGE_COUNT = 2;
+        private String tabTitles[] = {"Home", "Mentions"};
+
+        public TweetsPagerAdapter(FragmentManager fa){
+            super(fa);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            if (position == 0){
+                return new HomeTimelineFragment();
+            } else {
+                return new MentionsTimelineFragment();
+            }
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return tabTitles[position];
+        }
+
+        @Override
+        public int getCount() {
+            return PAGE_COUNT;
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,21 +77,18 @@ public class TimelineActivity extends ActionBarActivity {
         client.setParentActivity(this);
         retrieveLoggedInUserInfo();
 
-        twitterParams = new TwitterParams();
-        setupView();
-
-        initialTimelineLoad();
-    }
-
-    private void initialTimelineLoad(){
-        aTweets.clear();
-        twitterParams = new TwitterParams();
-
-        populateTimeline(twitterParams);
-        // try to revive it back
-        if (userInfo == null && client.isNetworkAvailable()){
-            retrieveLoggedInUserInfo();
+        if (savedInstanceState == null){
+//            homeTimelineFragment = (HomeTimelineFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_timeline);
         }
+
+        // setting viewpager
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        // set the adapter into the viewpager
+        viewPager.setAdapter(new TweetsPagerAdapter(getSupportFragmentManager()));
+        // find the sliding tabstrip
+        PagerSlidingTabStrip tabStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        // attach tabstrip to the viewpager
+        tabStrip.setViewPager(viewPager);
     }
 
     private void retrieveLoggedInUserInfo(){
@@ -111,91 +124,6 @@ public class TimelineActivity extends ActionBarActivity {
         });
     }
 
-    private void setupView() {
-        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        lvTweet = (ListView) findViewById(R.id.lvTweets);
-
-        tweets = new ArrayList<Tweet>();
-        aTweets = new TweetsArrayAdapter(this, tweets);
-
-        lvTweet.setAdapter(aTweets);
-        lvTweet.setOnScrollListener(new EndlessScrollListener(twitterParams.pageSize) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount) {
-                Log.d(APP_TAG, "loading more tweets");
-                loadMoreTweet(page, totalItemsCount);
-            }
-        });
-        lvTweet.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // get the item and pass it to the other activity
-                Tweet selectedTweet = aTweets.getItem(position);
-                Intent i = new Intent(TimelineActivity.this, ItemTweetActivity.class);
-                i.putExtra("tweet", selectedTweet);
-                startActivityForResult(i, INTENT_DETAIL_ITEM_TWEET);
-            }
-        });
-
-        // Setup refresh listener which triggers new data loading
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                initialTimelineLoad();
-            }
-        });
-        // Configure the refreshing colors
-        swipeContainer.setColorSchemeResources(
-                R.color.navbar_color,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light
-        );
-    }
-
-    private void loadMoreTweet(int page, int totalItems) {
-        // get the lowest tweet id shown
-        Tweet tweet = aTweets.getItem(totalItems - 1);
-        twitterParams.maxId = tweet.getUid() - 1;
-        populateTimeline(twitterParams);
-    }
-
-    private void populateTimeline(TwitterParams twitterParams) {
-        if (!client.isNetworkAvailable()){
-            // use cache from DB to retrieve the results
-            Toast.makeText(getApplicationContext(), client.NO_NETWORK_HOMETIMELINE, Toast.LENGTH_SHORT).show();
-            getDataFromDB();
-            return;
-        }
-
-        client.getHomeTimeline(twitterParams, new JsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                Log.d(APP_TAG, response.toString());
-                List<Tweet> newTweets =Tweet.fromJSONArray(response);
-                aTweets.addAll(newTweets);
-                // add all records also into SQLite
-                Tweet.insertAll(newTweets);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                if (statusCode == client.CODE_UNAUTHORIZED) {
-                    forceLogout();
-                } else {
-                    // something wrong
-                    Toast.makeText(getApplicationContext(), "Unable to retrieve latest information from internet, use cache instead", Toast.LENGTH_SHORT).show();
-                    getDataFromDB();
-                }
-            }
-
-            @Override
-            public void onFinish() {
-                swipeContainer.setRefreshing(false);
-            }
-        });
-    }
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -228,10 +156,6 @@ public class TimelineActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void forceLogout(){
-        client.clearAccessToken();
-        onBackPressed();
-    }
 
     public void onCompose(String message){
         final TweetStatus tweetStatus = new TweetStatus();
@@ -241,9 +165,9 @@ public class TimelineActivity extends ActionBarActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 // check if the response has the same message
-                Tweet newTweet = Tweet.fromJSON(response);
-                aTweets.insert(newTweet, 0); // always insert them into the most top
-                Tweet.insertAll(newTweet);
+//                Tweet newTweet = Tweet.fromJSON(response);
+//                homeTimelineFragment.getAdapter().insert(newTweet, 0); // always insert them into the most top
+//                Tweet.insertAll(newTweet);
             }
 
             @Override
@@ -266,10 +190,8 @@ public class TimelineActivity extends ActionBarActivity {
         }
     }
 
-    private void getDataFromDB(){
-        List<Tweet> newTweets = Tweet.getAll(twitterParams.sinceId, twitterParams.maxId);
-        aTweets.addAll(newTweets);
-
-        swipeContainer.setRefreshing(false);
+    private void forceLogout(){
+        client.clearAccessToken();
+        onBackPressed();
     }
 }
