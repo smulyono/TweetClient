@@ -1,11 +1,13 @@
 package com.codepath.apps.tweetclient.fragments;
 
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.codepath.apps.tweetclient.activity.TimelineActivity;
 import com.codepath.apps.tweetclient.models.Tweet;
+import com.codepath.apps.tweetclient.models.TweetClient_User;
 import com.codepath.apps.tweetclient.utils.TwitterParams;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -19,9 +21,29 @@ import java.util.List;
  * Created by smulyono on 3/14/15.
  */
 public class MentionsTimelineFragment extends TweetsListFragment {
+
+    public static MentionsTimelineFragment newInstance(TweetClient_User user) {
+        MentionsTimelineFragment fragmentDemo = new MentionsTimelineFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("user", user);
+        fragmentDemo.setArguments(args);
+        return fragmentDemo;
+    }
+
     @Override
     protected List getListDataFromDB() {
-        List<Tweet> newTweets = Tweet.getAll(twitterParams.sinceId, twitterParams.maxId);
+        TweetClient_User userInfo = getArguments().getParcelable("user");
+
+        // get user screen name
+        String userScreenName;
+        List<Tweet> newTweets;
+        if (userInfo.getScreenName() != null && !userInfo.getScreenName().isEmpty()){
+            userScreenName = "@" + userInfo.getScreenName();
+            newTweets = Tweet.getAll(twitterParams.sinceId, twitterParams.maxId, userScreenName);
+        } else {
+            newTweets = Tweet.getAll(twitterParams.sinceId, twitterParams.maxId);
+        }
+
         return newTweets;
     }
 

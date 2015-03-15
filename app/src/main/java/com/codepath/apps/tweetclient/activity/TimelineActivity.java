@@ -43,10 +43,10 @@ public class TimelineActivity extends ActionBarActivity {
         private HomeTimelineFragment homeTimelineFragment;
         private MentionsTimelineFragment mentionsTimelineFragment;
 
-        public TweetsPagerAdapter(FragmentManager fa){
+        public TweetsPagerAdapter(FragmentManager fa, TweetClient_User userInfo){
             super(fa);
             homeTimelineFragment = new HomeTimelineFragment();
-            mentionsTimelineFragment = new MentionsTimelineFragment();
+            mentionsTimelineFragment = MentionsTimelineFragment.newInstance(userInfo);
         }
 
         @Override
@@ -84,14 +84,10 @@ public class TimelineActivity extends ActionBarActivity {
         client.setParentActivity(this);
         retrieveLoggedInUserInfo();
 
-        if (savedInstanceState == null){
-//            homeTimelineFragment = (HomeTimelineFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_timeline);
-        }
-
         // setting viewpager
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         // set the adapter into the viewpager
-        viewPager.setAdapter(new TweetsPagerAdapter(getSupportFragmentManager()));
+        viewPager.setAdapter(new TweetsPagerAdapter(getSupportFragmentManager(), userInfo));
         // find the sliding tabstrip
         PagerSlidingTabStrip tabStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         // attach tabstrip to the viewpager
