@@ -49,7 +49,7 @@ public class UserProfileFragment extends Fragment {
         ImageView ivProfileImage = (ImageView) v.findViewById(R.id.ivProfileImage);
 
         ImageView ivProfileBackground = (ImageView) v.findViewById(R.id.ivProfileBackground);
-        if (userInfo.getProfileBackgroundColor() != null && !userInfo.getProfileBackgroundImageUrl().isEmpty()){
+        if (userInfo != null && userInfo.getProfileBackgroundColor() != null && !userInfo.getProfileBackgroundImageUrl().isEmpty()){
             int screenWidth = DeviceDimensionsHelper.getDisplayWidth(getActivity());
             float imgHeight = DeviceDimensionsHelper.convertDpToPixel(100, getActivity());
             Picasso.with(getActivity().getApplicationContext())
@@ -58,6 +58,9 @@ public class UserProfileFragment extends Fragment {
                     .into(ivProfileBackground);
         }
 
+        if (userInfo == null){
+            return ;
+        }
         NumberFormat nf = NumberFormat.getInstance();
 
         tvTagline.setText(userInfo.getTagline());

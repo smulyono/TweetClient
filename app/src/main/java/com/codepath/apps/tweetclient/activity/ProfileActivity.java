@@ -26,12 +26,17 @@ public class ProfileActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(user.getName());
+        if (user != null && user.getName() != null){
+            getSupportActionBar().setTitle(user.getName());
+        }
         getSupportActionBar().setLogo(R.mipmap.twitter_client);
 
 
         if (savedInstanceState == null){
-            String screenName = user.getScreenName();
+            String screenName = "";
+            if (user != null) {
+                screenName = user.getScreenName();
+            }
             Log.d(TimelineActivity.APP_TAG, "SCREEN NAME PASSED :-> " + screenName);
             UserTimelineFragment userTimelineFragment = UserTimelineFragment.newInstance(user);
 

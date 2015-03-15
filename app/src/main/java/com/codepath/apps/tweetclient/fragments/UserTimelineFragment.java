@@ -55,7 +55,10 @@ public class UserTimelineFragment extends TweetsListFragment {
             return;
         }
         User userObj = getArguments().getParcelable("userObj");
-        String screenName = userObj.getScreenName();
+        String screenName = "";
+        if (userObj != null){
+            screenName = userObj.getScreenName();
+        }
 
         progressBar.setVisibility(View.VISIBLE);
         client.getUserTimeline(screenName, twitterParams, new JsonHttpResponseHandler() {

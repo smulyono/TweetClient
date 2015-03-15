@@ -37,7 +37,7 @@ public class MentionsTimelineFragment extends TweetsListFragment {
         // get user screen name
         String userScreenName;
         List<Tweet> newTweets;
-        if (userInfo.getScreenName() != null && !userInfo.getScreenName().isEmpty()){
+        if (userInfo != null && userInfo.getScreenName() != null && !userInfo.getScreenName().isEmpty()){
             userScreenName = "@" + userInfo.getScreenName();
             newTweets = Tweet.getAll(twitterParams.sinceId, twitterParams.maxId, userScreenName);
         } else {

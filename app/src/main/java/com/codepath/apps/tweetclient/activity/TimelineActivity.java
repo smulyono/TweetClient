@@ -206,6 +206,6 @@ public class TimelineActivity extends ActionBarActivity {
 
     private void forceLogout(){
         client.clearAccessToken();
-        onBackPressed();
+        finish();
     }
 }
