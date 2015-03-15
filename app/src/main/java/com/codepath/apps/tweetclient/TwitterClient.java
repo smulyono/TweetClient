@@ -125,6 +125,7 @@ public class TwitterClient extends OAuthBaseClient {
         if (twitterParams.maxId > 0){
             params.put("max_id", twitterParams.maxId);
         }
+        params.put("screen_name", screenName);
         getClient().get(apiUrl,params, handler);
     }
 
@@ -144,8 +145,8 @@ public class TwitterClient extends OAuthBaseClient {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) parentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-//        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
-        return false;
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+//        return false;
     }
 
 

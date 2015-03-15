@@ -21,6 +21,14 @@
             android:layout_alignParentEnd="true"
             />
 
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar"
+            android:visibility="invisible"
+            android:layout_gravity="center_horizontal" />
+
+
     </android.support.v4.widget.SwipeRefreshLayout>
 
 

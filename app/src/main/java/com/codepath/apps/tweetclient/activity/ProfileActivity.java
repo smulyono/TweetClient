@@ -23,8 +23,12 @@ public class ProfileActivity extends ActionBarActivity {
         // get the screenName
         user = getIntent().getParcelableExtra("user");
 
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(user.getName());
+        getSupportActionBar().setLogo(R.mipmap.twitter_client);
+
 
         if (savedInstanceState == null){
             String screenName = user.getScreenName();

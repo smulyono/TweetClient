@@ -161,6 +161,9 @@ public class Tweet extends Model implements Parcelable {
         return retweeted;
     }
 
+    public Tweet() {
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -174,9 +177,7 @@ public class Tweet extends Model implements Parcelable {
         dest.writeParcelable(this.user, 0);
         dest.writeInt(this.tweetCount);
         dest.writeInt(this.favouriteCount);
-    }
-
-    public Tweet() {
+        dest.writeInt(this.retweeted);
     }
 
     private Tweet(Parcel in) {
@@ -186,9 +187,10 @@ public class Tweet extends Model implements Parcelable {
         this.user = in.readParcelable(User.class.getClassLoader());
         this.tweetCount = in.readInt();
         this.favouriteCount = in.readInt();
+        this.retweeted = in.readInt();
     }
 
-    public static final Parcelable.Creator<Tweet> CREATOR = new Parcelable.Creator<Tweet>() {
+    public static final Creator<Tweet> CREATOR = new Creator<Tweet>() {
         public Tweet createFromParcel(Parcel source) {
             return new Tweet(source);
         }

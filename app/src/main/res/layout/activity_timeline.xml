@@ -10,8 +10,15 @@
         android:id="@+id/tabs"
         app:pstsShouldExpand="true"
         app:pstsTextAllCaps="true"
+        app:pstsIndicatorColor="@color/navbar_color"
+        app:pstsIndicatorHeight="6dp"
+        app:pstsUnderlineColor="@color/light_black_color"
         android:layout_width="match_parent"
-        android:layout_height="48dp">
+        android:layout_height="48dp"
+        android:textSize="@dimen/title_text"
+        android:textColor="@color/light_black_color"
+        app:pstsTabPaddingLeftRight="14dp"
+        >
     </com.astuetz.PagerSlidingTabStrip>
 
     <android.support.v4.view.ViewPager

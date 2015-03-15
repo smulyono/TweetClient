@@ -38,17 +38,21 @@ public class TimelineActivity extends ActionBarActivity {
     public class TweetsPagerAdapter extends FragmentPagerAdapter {
         final int PAGE_COUNT = 2;
         private String tabTitles[] = {"Home", "Mentions"};
+        private HomeTimelineFragment homeTimelineFragment;
+        private MentionsTimelineFragment mentionsTimelineFragment;
 
         public TweetsPagerAdapter(FragmentManager fa){
             super(fa);
+            homeTimelineFragment = new HomeTimelineFragment();
+            mentionsTimelineFragment = new MentionsTimelineFragment();
         }
 
         @Override
         public Fragment getItem(int position) {
             if (position == 0){
-                return new HomeTimelineFragment();
+                return homeTimelineFragment;
             } else {
-                return new MentionsTimelineFragment();
+                return mentionsTimelineFragment;
             }
         }
 
@@ -72,6 +76,7 @@ public class TimelineActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         getSupportActionBar().setLogo(R.mipmap.twitter_client);
+        getSupportActionBar().setTitle("");
 
         client = TwitterApplication.getRestClient();
         client.setParentActivity(this);

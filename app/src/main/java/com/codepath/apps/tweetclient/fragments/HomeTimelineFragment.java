@@ -2,6 +2,7 @@ package com.codepath.apps.tweetclient.fragments;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.codepath.apps.tweetclient.activity.TimelineActivity;
@@ -39,7 +40,7 @@ public class HomeTimelineFragment extends TweetsListFragment{
             getDataFromDB();
             return;
         }
-
+        progressBar.setVisibility(View.VISIBLE);
         client.getHomeTimeline(twitterParams, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
@@ -64,6 +65,7 @@ public class HomeTimelineFragment extends TweetsListFragment{
             @Override
             public void onFinish() {
                 swipeContainer.setRefreshing(false);
+                progressBar.setVisibility(View.INVISIBLE);
             }
         });
     }

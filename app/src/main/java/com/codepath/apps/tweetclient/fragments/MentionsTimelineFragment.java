@@ -1,6 +1,7 @@
 package com.codepath.apps.tweetclient.fragments;
 
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.codepath.apps.tweetclient.activity.TimelineActivity;
@@ -32,12 +33,12 @@ public class MentionsTimelineFragment extends TweetsListFragment {
             getDataFromDB();
             return;
         }
-
-        client.getMentionsTimeline(twitterParams, new JsonHttpResponseHandler(){
+        progressBar.setVisibility(View.VISIBLE);
+        client.getMentionsTimeline(twitterParams, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 Log.d(TimelineActivity.APP_TAG, response.toString());
-                List<Tweet> newTweets =Tweet.fromJSONArray(response);
+                List<Tweet> newTweets = Tweet.fromJSONArray(response);
                 aTweets.addAll(newTweets);
                 // add all records also into SQLite
                 Tweet.insertAll(newTweets);
@@ -56,7 +57,9 @@ public class MentionsTimelineFragment extends TweetsListFragment {
 
             @Override
             public void onFinish() {
+
                 swipeContainer.setRefreshing(false);
+                progressBar.setVisibility(View.INVISIBLE);
             }
         });
     }

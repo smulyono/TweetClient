@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.codepath.apps.tweetclient.R;
 import com.codepath.apps.tweetclient.TwitterApplication;
@@ -37,6 +38,7 @@ public abstract class TweetsListFragment extends Fragment {
     protected ListView lvTweet;
     protected ArrayList<Tweet> tweets;
     protected TweetsArrayAdapter aTweets;
+    protected ProgressBar progressBar;
 
     // Inflation logic
     @Override
@@ -52,6 +54,7 @@ public abstract class TweetsListFragment extends Fragment {
     protected void setupView(View v) {
         swipeContainer = (SwipeRefreshLayout) v.findViewById(R.id.swipeContainer);
         lvTweet = (ListView) v.findViewById(R.id.lvTweets);
+        progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
     }
 
     protected void initialTimelineLoad(){
@@ -95,11 +98,13 @@ public abstract class TweetsListFragment extends Fragment {
         aTweets = new TweetsArrayAdapter(getActivity(), tweets);
 
         lvTweet.setAdapter(aTweets);
-        lvTweet.setOnScrollListener(new EndlessScrollListener(twitterParams.pageSize) {
+        lvTweet.setOnScrollListener(new EndlessScrollListener() {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                Log.d(TimelineActivity.APP_TAG, "loading more tweets");
-                loadMoreData(page, totalItemsCount);
+                if (totalItemsCount >= twitterParams.pageSize) {
+                    Log.d(TimelineActivity.APP_TAG, "loading more tweets for page " + page);
+                    loadMoreData(page, totalItemsCount);
+                }
             }
         });
         lvTweet.setOnItemClickListener(new AdapterView.OnItemClickListener() {
