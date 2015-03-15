@@ -14,6 +14,8 @@ import com.activeandroid.query.Select;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 /**
  * Created by smulyono on 3/7/15.
  */
@@ -43,6 +45,22 @@ public class User extends Model implements Parcelable {
     public int getTweetsCount() {
         return tweetsCount;
     }
+
+
+    public static User findUserWithScreenName(String screenName){
+        List<User> recs =  new Select()
+                    .from(User.class)
+                    .where("screen_name = ?", screenName)
+                    .limit(1)
+                    .execute();
+        if (recs.size() == 1){
+            return recs.get(0);
+        } else {
+            return null;
+        }
+
+    }
+
 
     protected static void parseFromJSON(JSONObject json, User userObj) throws JSONException{
         userObj.name = json.getString("name");

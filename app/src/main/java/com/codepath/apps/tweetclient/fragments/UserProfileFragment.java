@@ -10,17 +10,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codepath.apps.tweetclient.R;
-import com.codepath.apps.tweetclient.models.TweetClient_User;
+import com.codepath.apps.tweetclient.models.User;
+import com.codepath.apps.tweetclient.utils.DeviceDimensionsHelper;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
+
+import java.text.NumberFormat;
 
 /**
  * Created by smulyono on 3/14/15.
  */
 public class UserProfileFragment extends Fragment {
 
-    public static UserProfileFragment newInstance(TweetClient_User user) {
+    public static UserProfileFragment newInstance(User user) {
         UserProfileFragment fragmentDemo = new UserProfileFragment();
         Bundle args = new Bundle();
         args.putParcelable("user", user);
@@ -36,7 +39,7 @@ public class UserProfileFragment extends Fragment {
     }
 
     private void setupViews(View v) {
-        TweetClient_User userInfo = getArguments().getParcelable("user");
+        User userInfo = getArguments().getParcelable("user");
 
         TextView tvTagline = (TextView) v.findViewById(R.id.tvTagline);
         TextView tvScreenName = (TextView) v.findViewById(R.id.tvScreenName);
@@ -47,18 +50,22 @@ public class UserProfileFragment extends Fragment {
 
         ImageView ivProfileBackground = (ImageView) v.findViewById(R.id.ivProfileBackground);
         if (userInfo.getProfileBackgroundColor() != null && !userInfo.getProfileBackgroundImageUrl().isEmpty()){
+            int screenWidth = DeviceDimensionsHelper.getDisplayWidth(getActivity());
+            float imgHeight = DeviceDimensionsHelper.convertDpToPixel(100, getActivity());
             Picasso.with(getActivity().getApplicationContext())
                     .load(userInfo.getProfileBackgroundImageUrl())
-                    .resize(0, 100)
+                    .resize(screenWidth, Math.round(imgHeight))
                     .into(ivProfileBackground);
         }
+
+        NumberFormat nf = NumberFormat.getInstance();
 
         tvTagline.setText(userInfo.getTagline());
         tvScreenName.setText("@" + userInfo.getScreenName());
         tvNumTweets.setText("" + userInfo.getTweetsCount());
-        tvNumFollowers.setText("" + userInfo.getFollowersCount());
-        tvNumFollowing.setText("" + userInfo.getFollowingCount());
 
+        tvNumFollowers.setText(nf.format(userInfo.getFollowersCount()));
+        tvNumFollowing.setText(nf.format(userInfo.getFollowingCount()));
 
         Transformation transformation = new RoundedTransformationBuilder()
                 .borderWidthDp(0)

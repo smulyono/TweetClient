@@ -1,9 +1,31 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     tools:context="com.codepath.apps.tweetclient.activity.ItemTweetActivity">
 
-    <include layout="@layout/tweet_item_template"/>
 
-</FrameLayout>
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="150dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/flItemTweetContainer"
+        >
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="150dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/flItemTweetContainer"
+        android:id="@+id/flReplyContainer"
+        >
+
+    </FrameLayout>
+</RelativeLayout>

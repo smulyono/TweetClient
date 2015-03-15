@@ -10,13 +10,6 @@
         android:icon="@drawable/ic_compose"
     />
 
-    <item android:id="@+id/action_logout"
-        android:title="@string/action_logout"
-        android:orderInCategory="100"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_logout"
-        />
-
 
     <item android:id="@+id/action_profile"
         android:title="@string/action_logout"
@@ -24,4 +17,12 @@
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_profile"
         />
+
+    <item android:id="@+id/action_logout"
+        android:title="@string/action_logout"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_logout"
+        />
+
 </menu>

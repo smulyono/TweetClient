@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import com.codepath.apps.tweetclient.activity.TimelineActivity;
 import com.codepath.apps.tweetclient.models.Tweet;
+import com.codepath.apps.tweetclient.models.User;
 import com.codepath.apps.tweetclient.utils.TwitterParams;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -20,17 +21,27 @@ import java.util.List;
  */
 public class UserTimelineFragment extends TweetsListFragment {
 
-    public static UserTimelineFragment newInstance(String screenName) {
+    public static UserTimelineFragment newInstance(User userObj) {
         UserTimelineFragment fragmentDemo = new UserTimelineFragment();
         Bundle args = new Bundle();
-        args.putString("screenName", screenName);
+        args.putParcelable("userObj", userObj);
         fragmentDemo.setArguments(args);
         return fragmentDemo;
     }
 
     @Override
     protected List getListDataFromDB() {
-        List<Tweet> newTweets = Tweet.getAll(twitterParams.sinceId, twitterParams.maxId);
+        User userObj = getArguments().getParcelable("userObj");
+
+        // get the data base id from the User obj
+        User userDBObj = User.findUserWithScreenName(userObj.getScreenName());
+
+        List<Tweet> newTweets;
+        if (userDBObj != null){
+            newTweets = Tweet.getAll(twitterParams.sinceId, twitterParams.maxId, userDBObj.getId());
+        } else {
+            newTweets = Tweet.getAll(twitterParams.sinceId, twitterParams.maxId);
+        }
         return newTweets;
     }
 
@@ -42,7 +53,8 @@ public class UserTimelineFragment extends TweetsListFragment {
             getDataFromDB();
             return;
         }
-        String screenName = getArguments().getString("screenName");
+        User userObj = getArguments().getParcelable("userObj");
+        String screenName = userObj.getScreenName();
 
         client.getUserTimeline(screenName, twitterParams, new JsonHttpResponseHandler() {
             @Override

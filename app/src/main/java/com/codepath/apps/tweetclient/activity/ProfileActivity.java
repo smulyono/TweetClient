@@ -10,11 +10,11 @@ import android.view.MenuItem;
 import com.codepath.apps.tweetclient.R;
 import com.codepath.apps.tweetclient.fragments.UserProfileFragment;
 import com.codepath.apps.tweetclient.fragments.UserTimelineFragment;
-import com.codepath.apps.tweetclient.models.TweetClient_User;
+import com.codepath.apps.tweetclient.models.User;
 
 public class ProfileActivity extends ActionBarActivity {
 
-    private TweetClient_User user;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +29,7 @@ public class ProfileActivity extends ActionBarActivity {
         if (savedInstanceState == null){
             String screenName = user.getScreenName();
             Log.d(TimelineActivity.APP_TAG, "SCREEN NAME PASSED :-> " + screenName);
-            UserTimelineFragment userTimelineFragment = UserTimelineFragment.newInstance(screenName);
+            UserTimelineFragment userTimelineFragment = UserTimelineFragment.newInstance(user);
 
             UserProfileFragment userProfileFragment = UserProfileFragment.newInstance(user);
 

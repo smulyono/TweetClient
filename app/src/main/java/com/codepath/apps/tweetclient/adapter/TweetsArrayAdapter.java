@@ -1,6 +1,7 @@
 package com.codepath.apps.tweetclient.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codepath.apps.tweetclient.R;
+import com.codepath.apps.tweetclient.activity.ProfileActivity;
 import com.codepath.apps.tweetclient.models.Tweet;
 import com.codepath.apps.tweetclient.utils.AppUtil;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
@@ -40,7 +42,7 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Tweet tweet = getItem(position);
+        final Tweet tweet = getItem(position);
 
         ViewHolder viewHolder;
 
@@ -82,6 +84,16 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
                 .resize(50, 50)
                 .transform(transformation)
                 .into(viewHolder.ivProfileImage);
+
+        viewHolder.ivProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent i = new Intent(getContext(), ProfileActivity.class);
+                i.putExtra("user", tweet.getUser());
+                getContext().startActivity(i);
+            }
+        });
 
         return convertView;
     }

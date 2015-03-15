@@ -35,6 +35,8 @@ public class Tweet extends Model implements Parcelable {
     private int tweetCount;
     @Column(name = "favourite_count")
     private int favouriteCount;
+    @Column(name = "retweeted")
+    private int retweeted;
 
     public static ArrayList<Tweet> fromJSONArray(JSONArray jsonArray) {
         ArrayList<Tweet> tweets = new ArrayList<Tweet>();
@@ -63,6 +65,12 @@ public class Tweet extends Model implements Parcelable {
             tweet.createdAt = jsonObject.getString("created_at");
             tweet.tweetCount = jsonObject.getInt("retweet_count");
             tweet.favouriteCount = jsonObject.getInt("favorite_count");
+            boolean hasRetweeted = jsonObject.getBoolean("retweeted");
+            if (hasRetweeted){
+                tweet.retweeted = 1;
+            } else {
+                tweet.retweeted = 0;
+            }
             tweet.user = User.findOrCreatefromJSON(jsonObject.getJSONObject("user"));
         } catch (JSONException e){
             e.printStackTrace();
@@ -107,6 +115,23 @@ public class Tweet extends Model implements Parcelable {
         }
     }
 
+    public static List<Tweet> getAll(long sinceId, long maxId, long userId){
+        if (maxId > 0){
+            return new Select().from(Tweet.class)
+                    .where("uid > ?", sinceId).and("uid <= ? ", maxId)
+                    .and("user = ?", userId)
+                    .orderBy("uid desc")
+                    .limit(25)
+                    .execute();
+        } else {
+            return new Select().from(Tweet.class)
+                    .where("uid > ?", sinceId)
+                    .and("user = ?", userId)
+                    .orderBy("uid desc")
+                    .limit(25)
+                    .execute();
+        }
+    }
 
     public String getBody() {
         return body;
@@ -132,6 +157,9 @@ public class Tweet extends Model implements Parcelable {
         return favouriteCount;
     }
 
+    public int getRetweeted() {
+        return retweeted;
+    }
 
     @Override
     public int describeContents() {
