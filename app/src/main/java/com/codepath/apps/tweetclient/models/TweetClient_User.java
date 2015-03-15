@@ -1,7 +1,8 @@
 package com.codepath.apps.tweetclient.models;
 
-import com.activeandroid.Model;
-import com.activeandroid.annotation.Column;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 
@@ -17,15 +18,7 @@ import org.json.JSONObject;
  * Created by smulyono on 3/8/15.
  */
 @Table(name="tweetclient_user")
-public class TweetClient_User extends Model {
-    @Column(name="name")
-    private String name;
-    @Column(name = "uid", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
-    private long uid;
-    @Column(name = "screen_name")
-    private String screenName;
-    @Column(name = "profile_image_url")
-    private String profileImageUrl;
+public class TweetClient_User extends User implements Parcelable {
 
     public static TweetClient_User fromJSON(JSONObject json){
         TweetClient_User user = new TweetClient_User();
@@ -34,15 +27,11 @@ public class TweetClient_User extends Model {
 
             TweetClient_User existingUser = TweetClient_User.getUserInfo(user.uid);
             if (existingUser != null){
-                existingUser.name = json.getString("name");
-                existingUser.screenName = json.getString("screen_name");
-                existingUser.profileImageUrl = json.getString("profile_image_url");
+                parseFromJSON(json, existingUser);
                 existingUser.save();
                 return existingUser;
             } else {
-                user.name = json.getString("name");
-                user.screenName = json.getString("screen_name");
-                user.profileImageUrl = json.getString("profile_image_url");
+                parseFromJSON(json, user);
                 // always save this information to DB
                 user.save();
             }
@@ -59,19 +48,48 @@ public class TweetClient_User extends Model {
         return existingUser;
     }
 
-    public String getName() {
-        return name;
+    public TweetClient_User() {
     }
 
-    public long getUid() {
-        return uid;
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
-    public String getScreenName() {
-        return screenName;
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.name);
+        dest.writeLong(this.uid);
+        dest.writeString(this.screenName);
+        dest.writeString(this.profileImageUrl);
+        dest.writeString(this.tagline);
+        dest.writeInt(this.followersCount);
+        dest.writeInt(this.followingCount);
+        dest.writeString(this.profileBackgroundImageUrl);
+        dest.writeString(this.profileBackgroundColor);
+        dest.writeInt(this.tweetsCount);
     }
 
-    public String getProfileImageUrl() {
-        return profileImageUrl;
+    private TweetClient_User(Parcel in) {
+        this.name = in.readString();
+        this.uid = in.readLong();
+        this.screenName = in.readString();
+        this.profileImageUrl = in.readString();
+        this.tagline = in.readString();
+        this.followersCount = in.readInt();
+        this.followingCount = in.readInt();
+        this.profileBackgroundImageUrl = in.readString();
+        this.profileBackgroundColor = in.readString();
+        this.tweetsCount = in.readInt();
     }
+
+    public static final Creator<TweetClient_User> CREATOR = new Creator<TweetClient_User>() {
+        public TweetClient_User createFromParcel(Parcel source) {
+            return new TweetClient_User(source);
+        }
+
+        public TweetClient_User[] newArray(int size) {
+            return new TweetClient_User[size];
+        }
+    };
 }

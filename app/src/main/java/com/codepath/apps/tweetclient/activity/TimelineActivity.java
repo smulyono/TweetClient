@@ -32,7 +32,7 @@ public class TimelineActivity extends ActionBarActivity {
     public static final int INTENT_DETAIL_ITEM_TWEET = 1001;
 
     private TwitterClient client;
-    private HomeTimelineFragment homeTimelineFragment;
+    private ViewPager viewPager;
     public TweetClient_User userInfo;
 
     public class TweetsPagerAdapter extends FragmentPagerAdapter {
@@ -82,7 +82,7 @@ public class TimelineActivity extends ActionBarActivity {
         }
 
         // setting viewpager
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
         // set the adapter into the viewpager
         viewPager.setAdapter(new TweetsPagerAdapter(getSupportFragmentManager()));
         // find the sliding tabstrip
@@ -150,6 +150,11 @@ public class TimelineActivity extends ActionBarActivity {
                 break;
             case R.id.action_logout :
                 forceLogout();
+                break;
+            case R.id.action_profile :
+                Intent i = new Intent(this, ProfileActivity.class);
+                i.putExtra("user", userInfo);
+                startActivity(i);
                 break;
         }
 

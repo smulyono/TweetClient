@@ -104,7 +104,8 @@ public class TwitterClient extends OAuthBaseClient {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) parentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+//        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+        return false;
     }
 
     public void getMentionsTimeline(TwitterParams twitterParams, JsonHttpResponseHandler handler) {
@@ -114,6 +115,24 @@ public class TwitterClient extends OAuthBaseClient {
         }
 
         String apiUrl = getApiUrl("statuses/mentions_timeline.json");
+        RequestParams params = new RequestParams();
+        params.put("count", twitterParams.pageSize);
+        if (twitterParams.sinceId > 0){
+            params.put("since_id", twitterParams.sinceId);
+        }
+        if (twitterParams.maxId > 0){
+            params.put("max_id", twitterParams.maxId);
+        }
+        getClient().get(apiUrl,params, handler);
+    }
+
+    public void getUserTimeline(String screenName, TwitterParams twitterParams, JsonHttpResponseHandler handler) {
+        if (!isNetworkAvailable()){
+            Toast.makeText(parentActivity.getApplicationContext(), NO_NETWORK_HOMETIMELINE, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String apiUrl = getApiUrl("statuses/user_timeline.json");
         RequestParams params = new RequestParams();
         params.put("count", twitterParams.pageSize);
         if (twitterParams.sinceId > 0){

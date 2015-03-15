@@ -20,13 +20,41 @@ import org.json.JSONObject;
 @Table(name="tweet_user")
 public class User extends Model implements Parcelable {
     @Column(name="name")
-    private String name;
+    protected String name;
     @Column(name = "uid", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
-    private long uid;
+    protected long uid;
     @Column(name = "screen_name")
-    private String screenName;
+    protected String screenName;
     @Column(name = "profile_image_url")
-    private String profileImageUrl;
+    protected String profileImageUrl;
+    @Column(name="tagline")
+    protected String tagline;
+    @Column(name="followers_count")
+    protected int followersCount;
+    @Column(name="following_count")
+    protected int followingCount;
+    @Column(name="profile_background_image_url")
+    protected String profileBackgroundImageUrl;
+    @Column(name="profile_background_color")
+    protected String profileBackgroundColor;
+    @Column(name="tweets_count")
+    protected int tweetsCount;
+
+    public int getTweetsCount() {
+        return tweetsCount;
+    }
+
+    protected static void parseFromJSON(JSONObject json, User userObj) throws JSONException{
+        userObj.name = json.getString("name");
+        userObj.screenName = json.getString("screen_name");
+        userObj.profileImageUrl = json.getString("profile_image_url");
+        userObj.tagline = json.getString("description");
+        userObj.followersCount = json.getInt("followers_count");
+        userObj.followingCount = json.getInt("friends_count");
+        userObj.profileBackgroundImageUrl = json.getString("profile_background_image_url");
+        userObj.profileBackgroundColor = json.getString("profile_background_color");
+        userObj.tweetsCount = json.getInt("statuses_count");
+    }
 
     public static User findOrCreatefromJSON(JSONObject json){
         User user = new User();
@@ -38,15 +66,11 @@ public class User extends Model implements Parcelable {
                     .executeSingle();
             if (existingUser != null){
                 //  update the current record with updated info
-                existingUser.name = json.getString("name");
-                existingUser.screenName = json.getString("screen_name");
-                existingUser.profileImageUrl = json.getString("profile_image_url");
+                parseFromJSON(json, existingUser);
                 existingUser.save();
                 return existingUser;
             } else {
-                user.name = json.getString("name");
-                user.screenName = json.getString("screen_name");
-                user.profileImageUrl = json.getString("profile_image_url");
+                parseFromJSON(json, user);
                 user.save();
             }
         } catch (JSONException e){
@@ -71,6 +95,28 @@ public class User extends Model implements Parcelable {
         return profileImageUrl;
     }
 
+    public String getTagline() {
+        return tagline;
+    }
+
+    public int getFollowersCount() {
+        return followersCount;
+    }
+
+    public int getFollowingCount() {
+        return followingCount;
+    }
+
+    public String getProfileBackgroundImageUrl() {
+        return profileBackgroundImageUrl;
+    }
+
+    public String getProfileBackgroundColor() {
+        return profileBackgroundColor;
+    }
+
+    public User() {
+    }
 
     @Override
     public int describeContents() {
@@ -83,9 +129,12 @@ public class User extends Model implements Parcelable {
         dest.writeLong(this.uid);
         dest.writeString(this.screenName);
         dest.writeString(this.profileImageUrl);
-    }
-
-    public User() {
+        dest.writeString(this.tagline);
+        dest.writeInt(this.followersCount);
+        dest.writeInt(this.followingCount);
+        dest.writeString(this.profileBackgroundImageUrl);
+        dest.writeString(this.profileBackgroundColor);
+        dest.writeInt(this.tweetsCount);
     }
 
     private User(Parcel in) {
@@ -93,6 +142,12 @@ public class User extends Model implements Parcelable {
         this.uid = in.readLong();
         this.screenName = in.readString();
         this.profileImageUrl = in.readString();
+        this.tagline = in.readString();
+        this.followersCount = in.readInt();
+        this.followingCount = in.readInt();
+        this.profileBackgroundImageUrl = in.readString();
+        this.profileBackgroundColor = in.readString();
+        this.tweetsCount = in.readInt();
     }
 
     public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
