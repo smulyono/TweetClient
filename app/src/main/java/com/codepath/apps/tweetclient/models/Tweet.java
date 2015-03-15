@@ -133,6 +133,31 @@ public class Tweet extends Model implements Parcelable {
         }
     }
 
+    /**
+     * Simple search to replace online search capability (when network is down)
+     * @param sinceId
+     * @param maxId
+     * @param query
+     * @return
+     */
+    public static List<Tweet> getAll(long sinceId, long maxId, String query){
+        if (maxId > 0){
+            return new Select().from(Tweet.class)
+                    .where("uid > ?", sinceId).and("uid <= ? ", maxId)
+                    .and("body like ?", "%" + query + "%")
+                    .orderBy("uid desc")
+                    .limit(25)
+                    .execute();
+        } else {
+            return new Select().from(Tweet.class)
+                    .where("uid > ?", sinceId)
+                    .and("body like ?", "%" + query + "%")
+                    .orderBy("uid desc")
+                    .limit(25)
+                    .execute();
+        }
+    }
+
     public String getBody() {
         return body;
     }

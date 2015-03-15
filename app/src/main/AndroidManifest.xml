@@ -58,12 +58,15 @@
         <activity
             android:name=".activity.ItemTweetActivity"
             android:label="@string/title_activity_item_tweet"
-            android:parentActivityName=".activity.TimelineActivity"
             android:theme="@style/AppTheme" >
         </activity>
         <activity
             android:name=".activity.ProfileActivity"
             android:label="@string/title_activity_profile" >
+        </activity>
+        <activity
+            android:name=".activity.SearchActivity"
+            android:label="@string/title_activity_search" >
         </activity>
     </application>
 

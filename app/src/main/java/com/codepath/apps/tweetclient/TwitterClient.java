@@ -64,7 +64,7 @@ public class TwitterClient extends OAuthBaseClient {
         if (twitterParams.maxId > 0){
             params.put("max_id", twitterParams.maxId);
         }
-        getClient().get(apiUrl,params, handler);
+        getClient().get(apiUrl, params, handler);
     }
 
     public void postTweet(TweetStatus tweetStatus, AsyncHttpResponseHandler handler){
@@ -141,12 +141,32 @@ public class TwitterClient extends OAuthBaseClient {
         getClient().post(apiUrl, params, handler);
     }
 
+    public void search(String queryText, TwitterParams twitterParams, JsonHttpResponseHandler handler) {
+        if (!isNetworkAvailable()){
+            Toast.makeText(parentActivity.getApplicationContext(), NO_NETWORK_HOMETIMELINE, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String apiUrl = getApiUrl("search/tweets.json");
+        RequestParams params = new RequestParams();
+        // construct requestParams
+        params.put("q", queryText);
+        params.put("count", twitterParams.pageSize);
+        if (twitterParams.sinceId > 0){
+            params.put("since_id", twitterParams.sinceId);
+        }
+        if (twitterParams.maxId > 0){
+            params.put("max_id", twitterParams.maxId);
+        }
+
+        getClient().get(apiUrl, params, handler);
+    }
     public Boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) parentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
-//        return false;
+//        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+        return false;
     }
 
 

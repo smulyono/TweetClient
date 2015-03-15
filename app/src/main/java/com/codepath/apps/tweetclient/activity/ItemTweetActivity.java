@@ -50,8 +50,10 @@ public class ItemTweetActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id){
+            case android.R.id.home:
+                onBackPressed();
+                break;
         }
 
         return super.onOptionsItemSelected(item);

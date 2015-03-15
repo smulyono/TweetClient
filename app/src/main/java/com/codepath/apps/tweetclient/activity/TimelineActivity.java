@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -34,6 +35,7 @@ public class TimelineActivity extends ActionBarActivity {
     private TwitterClient client;
     private ViewPager viewPager;
     public TweetClient_User userInfo;
+    private SearchView mSearchView;
 
     public class TweetsPagerAdapter extends FragmentPagerAdapter {
         final int PAGE_COUNT = 2;
@@ -133,6 +135,7 @@ public class TimelineActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_timeline, menu);
+
         return true;
     }
 
@@ -160,6 +163,11 @@ public class TimelineActivity extends ActionBarActivity {
                 Intent i = new Intent(this, ProfileActivity.class);
                 i.putExtra("user", userInfo);
                 startActivity(i);
+                break;
+            case R.id.action_search :
+                //
+                Intent searchI = new Intent(this, SearchActivity.class);
+                startActivity(searchI);
                 break;
         }
 

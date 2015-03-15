@@ -3,25 +3,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.codepath.apps.tweetclient.activity.TimelineActivity">
 
+    <item android:id="@+id/action_search"
+        android:title="Search"
+        android:icon="@drawable/ic_search"
+        app:showAsAction="always"
+        />
+
     <item android:id="@+id/action_compose_tweet"
         android:title="@string/action_compose"
         android:orderInCategory="100"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:icon="@drawable/ic_compose"
     />
 
-
     <item android:id="@+id/action_profile"
-        android:title="@string/action_logout"
+        android:title="@string/action_profile"
         android:orderInCategory="100"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:icon="@drawable/ic_profile"
         />
 
     <item android:id="@+id/action_logout"
         android:title="@string/action_logout"
         android:orderInCategory="100"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:icon="@drawable/ic_logout"
         />
 
