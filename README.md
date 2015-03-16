@@ -39,6 +39,9 @@ User story completed:
 - [x] When a network request is sent, user sees an indeterminate progress indicator 
 - [x] User can click on a tweet to be taken to a "detail view" of that tweet
 
-        - User can take reweet actions on a tweet
+        - User can take __reweet__ actions on a tweet (in the video are shown on their profile page)
         
 - [x] User can search for tweets matching a particular query and see results
+
+
+![walkthrough version 2](walkthrough-v2.gif)
