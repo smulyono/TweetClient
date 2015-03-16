@@ -10,6 +10,7 @@ import com.codepath.apps.tweetclient.models.TweetStatus;
 import com.codepath.apps.tweetclient.utils.TwitterParams;
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import org.scribe.builder.api.Api;
@@ -63,7 +64,7 @@ public class TwitterClient extends OAuthBaseClient {
         if (twitterParams.maxId > 0){
             params.put("max_id", twitterParams.maxId);
         }
-        getClient().get(apiUrl,params, handler);
+        getClient().get(apiUrl, params, handler);
     }
 
     public void postTweet(TweetStatus tweetStatus, AsyncHttpResponseHandler handler){
@@ -91,18 +92,82 @@ public class TwitterClient extends OAuthBaseClient {
         getClient().get(apiUrl, params, handler);
     }
 
-	/* 1. Define the endpoint URL with getApiUrl and pass a relative path to the endpoint
-	 * 	  i.e getApiUrl("statuses/home_timeline.json");
-	 * 2. Define the parameters to pass to the request (query or body)
-	 *    i.e RequestParams params = new RequestParams("foo", "bar");
-	 * 3. Define the request method and make a call to the client
-	 *    i.e client.get(apiUrl, params, handler);
-	 *    i.e client.post(apiUrl, params, handler);
-	 */
+    public void getMentionsTimeline(TwitterParams twitterParams, JsonHttpResponseHandler handler) {
+        if (!isNetworkAvailable()){
+            Toast.makeText(parentActivity.getApplicationContext(), NO_NETWORK_HOMETIMELINE, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String apiUrl = getApiUrl("statuses/mentions_timeline.json");
+        RequestParams params = new RequestParams();
+        params.put("count", twitterParams.pageSize);
+        if (twitterParams.sinceId > 0){
+            params.put("since_id", twitterParams.sinceId);
+        }
+        if (twitterParams.maxId > 0){
+            params.put("max_id", twitterParams.maxId);
+        }
+        getClient().get(apiUrl,params, handler);
+    }
+
+    public void getUserTimeline(String screenName, TwitterParams twitterParams, JsonHttpResponseHandler handler) {
+        if (!isNetworkAvailable()){
+            Toast.makeText(parentActivity.getApplicationContext(), NO_NETWORK_HOMETIMELINE, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String apiUrl = getApiUrl("statuses/user_timeline.json");
+        RequestParams params = new RequestParams();
+        params.put("count", twitterParams.pageSize);
+        if (twitterParams.sinceId > 0){
+            params.put("since_id", twitterParams.sinceId);
+        }
+        if (twitterParams.maxId > 0){
+            params.put("max_id", twitterParams.maxId);
+        }
+        params.put("screen_name", screenName);
+        getClient().get(apiUrl,params, handler);
+    }
+
+    public void reTweet(long tweetId , AsyncHttpResponseHandler handler){
+        if (!isNetworkAvailable()){
+            Toast.makeText(parentActivity.getApplicationContext(), NO_NETWORK_HOMETIMELINE, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String apiUrl = getApiUrl("statuses/retweet/" + String.valueOf(tweetId) + ".json");
+        // construct requestParams
+        RequestParams params = new RequestParams();
+        getClient().post(apiUrl, params, handler);
+    }
+
+    public void search(String queryText, TwitterParams twitterParams, JsonHttpResponseHandler handler) {
+        if (!isNetworkAvailable()){
+            Toast.makeText(parentActivity.getApplicationContext(), NO_NETWORK_HOMETIMELINE, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String apiUrl = getApiUrl("search/tweets.json");
+        RequestParams params = new RequestParams();
+        // construct requestParams
+        params.put("q", queryText);
+        params.put("count", twitterParams.pageSize);
+        if (twitterParams.sinceId > 0){
+            params.put("since_id", twitterParams.sinceId);
+        }
+        if (twitterParams.maxId > 0){
+            params.put("max_id", twitterParams.maxId);
+        }
+
+        getClient().get(apiUrl, params, handler);
+    }
     public Boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) parentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+//        return false;
     }
+
+
 }

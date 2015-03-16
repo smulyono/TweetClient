@@ -35,6 +35,8 @@ public class Tweet extends Model implements Parcelable {
     private int tweetCount;
     @Column(name = "favourite_count")
     private int favouriteCount;
+    @Column(name = "retweeted")
+    private int retweeted;
 
     public static ArrayList<Tweet> fromJSONArray(JSONArray jsonArray) {
         ArrayList<Tweet> tweets = new ArrayList<Tweet>();
@@ -63,6 +65,12 @@ public class Tweet extends Model implements Parcelable {
             tweet.createdAt = jsonObject.getString("created_at");
             tweet.tweetCount = jsonObject.getInt("retweet_count");
             tweet.favouriteCount = jsonObject.getInt("favorite_count");
+            boolean hasRetweeted = jsonObject.getBoolean("retweeted");
+            if (hasRetweeted){
+                tweet.retweeted = 1;
+            } else {
+                tweet.retweeted = 0;
+            }
             tweet.user = User.findOrCreatefromJSON(jsonObject.getJSONObject("user"));
         } catch (JSONException e){
             e.printStackTrace();
@@ -107,6 +115,48 @@ public class Tweet extends Model implements Parcelable {
         }
     }
 
+    public static List<Tweet> getAll(long sinceId, long maxId, long userId){
+        if (maxId > 0){
+            return new Select().from(Tweet.class)
+                    .where("uid > ?", sinceId).and("uid <= ? ", maxId)
+                    .and("user = ?", userId)
+                    .orderBy("uid desc")
+                    .limit(25)
+                    .execute();
+        } else {
+            return new Select().from(Tweet.class)
+                    .where("uid > ?", sinceId)
+                    .and("user = ?", userId)
+                    .orderBy("uid desc")
+                    .limit(25)
+                    .execute();
+        }
+    }
+
+    /**
+     * Simple search to replace online search capability (when network is down)
+     * @param sinceId
+     * @param maxId
+     * @param query
+     * @return
+     */
+    public static List<Tweet> getAll(long sinceId, long maxId, String query){
+        if (maxId > 0){
+            return new Select().from(Tweet.class)
+                    .where("uid > ?", sinceId).and("uid <= ? ", maxId)
+                    .and("body like ?", "%" + query + "%")
+                    .orderBy("uid desc")
+                    .limit(25)
+                    .execute();
+        } else {
+            return new Select().from(Tweet.class)
+                    .where("uid > ?", sinceId)
+                    .and("body like ?", "%" + query + "%")
+                    .orderBy("uid desc")
+                    .limit(25)
+                    .execute();
+        }
+    }
 
     public String getBody() {
         return body;
@@ -132,6 +182,12 @@ public class Tweet extends Model implements Parcelable {
         return favouriteCount;
     }
 
+    public int getRetweeted() {
+        return retweeted;
+    }
+
+    public Tweet() {
+    }
 
     @Override
     public int describeContents() {
@@ -146,9 +202,7 @@ public class Tweet extends Model implements Parcelable {
         dest.writeParcelable(this.user, 0);
         dest.writeInt(this.tweetCount);
         dest.writeInt(this.favouriteCount);
-    }
-
-    public Tweet() {
+        dest.writeInt(this.retweeted);
     }
 
     private Tweet(Parcel in) {
@@ -158,9 +212,10 @@ public class Tweet extends Model implements Parcelable {
         this.user = in.readParcelable(User.class.getClassLoader());
         this.tweetCount = in.readInt();
         this.favouriteCount = in.readInt();
+        this.retweeted = in.readInt();
     }
 
-    public static final Parcelable.Creator<Tweet> CREATOR = new Parcelable.Creator<Tweet>() {
+    public static final Creator<Tweet> CREATOR = new Creator<Tweet>() {
         public Tweet createFromParcel(Parcel source) {
             return new Tweet(source);
         }

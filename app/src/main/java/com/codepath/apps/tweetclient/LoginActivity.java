@@ -2,7 +2,6 @@ package com.codepath.apps.tweetclient;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Menu;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -11,26 +10,12 @@ import android.widget.Toast;
 import com.codepath.apps.tweetclient.activity.TimelineActivity;
 import com.codepath.oauth.OAuthLoginActionBarActivity;
 
+import java.util.Random;
+
 
 public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 
-    private Handler handler;
     private RelativeLayout loginLayout;
-
-    private boolean changeToOne = false;
-
-    private Runnable runnableCode = new Runnable(){
-        @Override
-        public void run() {
-            if (changeToOne){
-                loginLayout.setBackgroundResource(R.drawable.bgimage_people);
-            } else {
-                loginLayout.setBackgroundResource(R.drawable.bgimage);
-            }
-            changeToOne = !changeToOne;
-            handler.postDelayed(runnableCode, 7000);
-        }
-    };
 
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +23,14 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 		setContentView(R.layout.activity_login);
 
         loginLayout = (RelativeLayout) findViewById(R.id.loginLayout);
+        Random r = new Random();
+        int i = r.nextInt(2);
+        if (i < 1){
+            loginLayout.setBackgroundResource(R.drawable.bgimage_people);
+        } else {
+            loginLayout.setBackgroundResource(R.drawable.bgimage);
+        }
 
-        handler = new Handler();
-        handler.post(runnableCode);
 	}
 
 	// Inflate the menu; this adds items to the action bar if it is present.
@@ -54,8 +44,8 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 	// i.e Display application "homepage"
 	@Override
 	public void onLoginSuccess() {
-        handler.removeCallbacks(runnableCode);
 		Intent i = new Intent(this, TimelineActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		startActivity(i);
     }
 
@@ -63,7 +53,7 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 	// i.e Display an error dialog or toast
 	@Override
 	public void onLoginFailure(Exception e) {
-        Toast.makeText(getApplicationContext(), "Unable to initiate OAuth, please check your device time and restar the applications", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Unable to initiate OAuth, please check your device time and restart the applications", Toast.LENGTH_SHORT).show();
         e.printStackTrace();
 	}
 

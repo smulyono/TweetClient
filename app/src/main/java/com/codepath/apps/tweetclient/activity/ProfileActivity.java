@@ -3,42 +3,58 @@ package com.codepath.apps.tweetclient.activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.codepath.apps.tweetclient.R;
-import com.codepath.apps.tweetclient.fragments.ItemTweetFragment;
-import com.codepath.apps.tweetclient.models.Tweet;
+import com.codepath.apps.tweetclient.fragments.UserProfileFragment;
+import com.codepath.apps.tweetclient.fragments.UserTimelineFragment;
+import com.codepath.apps.tweetclient.models.User;
 
-public class ItemTweetActivity extends ActionBarActivity {
+public class ProfileActivity extends ActionBarActivity {
 
-    private Tweet showingTweet;
-
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_item_tweet);
+        setContentView(R.layout.activity_profile);
+        // get the screenName
+        user = getIntent().getParcelableExtra("user");
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setLogo(R.mipmap.twitter_client);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (user != null && user.getName() != null){
+            getSupportActionBar().setTitle(user.getName());
+        }
+        getSupportActionBar().setLogo(R.mipmap.twitter_client);
 
-        showingTweet = getIntent().getParcelableExtra("tweet");
 
         if (savedInstanceState == null){
-            ItemTweetFragment itemTweetFragment = ItemTweetFragment.newInstance(showingTweet);
+            String screenName = "";
+            if (user != null) {
+                screenName = user.getScreenName();
+            }
+            Log.d(TimelineActivity.APP_TAG, "SCREEN NAME PASSED :-> " + screenName);
+            UserTimelineFragment userTimelineFragment = UserTimelineFragment.newInstance(user);
+
+            UserProfileFragment userProfileFragment = UserProfileFragment.newInstance(user);
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.flItemTweetContainer, itemTweetFragment);
+            ft.replace(R.id.flContainer, userTimelineFragment);
+            ft.replace(R.id.rlUserHeader, userProfileFragment);
             ft.commit();
         }
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_timeline, menu);
+        getMenuInflater().inflate(R.menu.menu_profile, menu);
+
         return true;
     }
 
@@ -48,14 +64,11 @@ public class ItemTweetActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         switch (id){
             case android.R.id.home:
                 onBackPressed();
                 break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }
